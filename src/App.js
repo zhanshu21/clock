@@ -4,7 +4,13 @@ import { useState } from 'react';
 function App() {
   const [breakTime, setBreakTime] = useState(5);
   const [session, setSession] = useState(25);
-
+  
+  function formatTime(minutes) {
+    const seconds = minutes * 60;
+    const formattedMinutes = String(Math.floor(seconds / 60)).padStart(2, '0');
+    const formattedSeconds = String(Math.floor(seconds % 60)).padStart(2, '0');
+    return `${formattedMinutes}:${formattedSeconds}`;
+  }
   return (
     <div className="App">
       <div id="control-panel" className='control-panel'>
@@ -23,7 +29,7 @@ function App() {
       </div>
       <div id="timer" className="timer">
         <h1 id="timer-label" className="timer-label">Session</h1>
-        <div id="time-left" className="time-left">{session}</div>
+        <div id="time-left" className="time-left">{formatTime(session)}</div>
         <button id="start_stop" className="start_stop">start/stop</button>
         <button id="reset" className="reset">reset</button>
       </div>
