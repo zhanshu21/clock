@@ -1,57 +1,120 @@
 import "./App.css";
-import { useReducer } from "react";
+import { useReducer, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowUp, faArrowDown } from "@fortawesome/free-solid-svg-icons";
-
+import {
+  faArrowUp,
+  faArrowDown,
+  faArrowRotateLeft,
+  faCirclePause,
+  faCirclePlay,
+} from "@fortawesome/free-solid-svg-icons";
 
 export const ACTIONS = {
-  INCREMENT_SESSION: "increment_sessionLength",
-  DECREMENT_SESSION: "decrement_sessionLength",
-  INCREMENT_BREAK: "increment_break",
-  DECREMENT_BREAK: "decrement_break",
+  INCREMENT_SESSION: "increment-sessionLength",
+  DECREMENT_SESSION: "decreme-t-sessionLength",
+  INCREMENT_BREAK: "increment-break",
+  DECREMENT_BREAK: "decrement-break",
+  TOGGLE_PLAY_PAUSE: "toggle-play-pause",
+  RESET: "reset",
+  SESSIONTICK: "sessionTick",
+  BREAKTICK: "breakTick",
+  SWITCH_SESSION_BREAK: "switch-session-break",
 };
 
 const initialState = {
   breakLength: 5,
+  breakLeft: 5 * 60,
   sessionLength: 25,
+  sessionLeft: 25 * 60,
+  isRunning: false,
+  isSession: true,
 };
 
 function reducer(state, { type, payload }) {
   switch (type) {
     case ACTIONS.INCREMENT_SESSION: {
-      if (state.sessionLength < 60) {
-        return { ...state, sessionLength: state.sessionLength + 1 };
-      }
-      return state;
+      let newLength = Math.min(60, state.sessionLength + 1);
+      return {
+        ...state,
+        sessionLength: newLength,
+        sessionLeft: newLength * 60,
+      };
     }
     case ACTIONS.DECREMENT_SESSION: {
-      if (state.sessionLength > 0) {
-        return { ...state, sessionLength: state.sessionLength - 1 };
-      }
-      return state;
+      let newLength = Math.max(1, state.sessionLength - 1);
+      return {
+        ...state,
+        sessionLength: newLength,
+        sessionLeft: newLength * 60,
+      };
     }
     case ACTIONS.INCREMENT_BREAK: {
-      if (state.breakLength < 60) {
-        return { ...state, breakLength: state.breakLength + 1 };
-      }
-      return state;
+      let newLength = Math.min(60, state.breakLength + 1);
+      return { ...state, breakLength: newLength, breakLeft: newLength * 60 };
     }
     case ACTIONS.DECREMENT_BREAK: {
-      if (state.breakLength > 0) {
-        return { ...state, breakLength: state.breakLength - 1 };
-      }
-      return state;
+      let newLength = Math.max(1, state.breakLength - 1);
+      return { ...state, breakLength: newLength, breakLeft: newLength * 60 };
     }
+    case ACTIONS.TOGGLE_PLAY_PAUSE:
+      return { ...state, isRunning: !state.isRunning };
+    case ACTIONS.RESET:
+      return initialState;
+    case ACTIONS.SESSIONTICK:
+      return { ...state, sessionLeft: state.sessionLeft - 1 };
+    case ACTIONS.BREAKTICK:
+      return { ...state, breakLeft: state.breakLeft - 1 };
+    case ACTIONS.SWITCH_SESSION_BREAK:
+      return {
+        ...state,
+        isSession: !state.isSession,
+        isRunning: true,
+        breakLeft: state.breakLength * 60,
+        sessionLeft: state.sessionLength * 60,
+      };
     default:
       return state;
   }
 }
 
 function App() {
-  const [{ breakLength, sessionLength }, dispatch] = useReducer(
-    reducer,
-    initialState
-  );
+  const [
+    {
+      breakLength,
+      breakLeft,
+      sessionLength,
+      sessionLeft,
+      isRunning,
+      isSession,
+    },
+    dispatch,
+  ] = useReducer(reducer, initialState);
+
+  useEffect(() => {
+    let timer = null;
+
+    if (isRunning) {
+      timer = setInterval(() => {
+        if (isSession && sessionLeft > 0) {
+          dispatch({ type: ACTIONS.SESSIONTICK });
+        } else if (!isSession && breakLeft > 0) {
+          dispatch({ type: ACTIONS.BREAKTICK });
+        } else if (sessionLeft === 0 && isSession) {
+          dispatch({ type: ACTIONS.SWITCH_SESSION_BREAK });
+          // dispatch({ type: ACTIONS.TOGGLE_PLAY_PAUSE }); // Stop the timer for a moment after switching
+        } else if (breakLeft === 0 && !isSession) {
+          dispatch({ type: ACTIONS.SWITCH_SESSION_BREAK });
+          // dispatch({ type: ACTIONS.TOGGLE_PLAY_PAUSE }); // Stop the timer for a moment after switching
+        }
+      }, 1000);
+    }
+    // cleanup function that React calls when the component unmounts
+    // or before the effect runs again (i.e., when dependency changes
+    return () => {
+      clearInterval(timer);
+    };
+  }, [isRunning, sessionLeft, isSession, breakLeft]);
+
   return (
     <div className="App">
       <div id="control-panel" className="control-panel">
@@ -106,24 +169,35 @@ function App() {
       </div>
       <div id="timer" className="timer">
         <h1 id="timer-label" className="timer-label">
-          Session
+          {isSession ? "Session" : "Break"}
         </h1>
         <div id="time-left" className="time-left">
-          {formatTime(sessionLength)}
+          {isSession ? formatTime(sessionLeft) : formatTime(breakLeft)}
         </div>
-        <button id="start_stop" className="start_stop">
-          start/stop
+        <button
+          id="start_stop"
+          className="start_stop"
+          onClick={() => {
+            dispatch({ type: ACTIONS.TOGGLE_PLAY_PAUSE });
+          }}
+        >
+          <FontAwesomeIcon icon={faCirclePause} />
         </button>
-        <button id="reset" className="reset">
-          reset
+        <button
+          id="reset"
+          className="reset"
+          onClick={() => {
+            dispatch({ type: ACTIONS.RESET });
+          }}
+        >
+          <FontAwesomeIcon icon={faArrowRotateLeft} />
         </button>
       </div>
     </div>
   );
 }
 
-function formatTime(minutes) {
-  const seconds = minutes * 60;
+function formatTime(seconds) {
   const formattedMinutes = String(Math.floor(seconds / 60)).padStart(2, "0");
   const formattedSeconds = String(Math.floor(seconds % 60)).padStart(2, "0");
   return `${formattedMinutes}:${formattedSeconds}`;
