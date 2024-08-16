@@ -1,5 +1,5 @@
 import "./App.css";
-import { useReducer, useEffect } from "react";
+import { useReducer, useEffect, useRef } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faArrowUp,
@@ -101,9 +101,11 @@ function App() {
     dispatch,
   ] = useReducer(reducer, initialState);
 
+  const audioRef = useRef(null);
+
   useEffect(() => {
     let timer = null;
-    let audio = new Audio(wavFile);
+    // let audio = new Audio(wavFile);
 
     if (isRunning) {
       dispatch({ type: ACTIONS.DISABLE_BUTTON });
@@ -114,11 +116,13 @@ function App() {
           dispatch({ type: ACTIONS.BREAKTICK });
         } else if (sessionLeft === 0 && isSession) {
           dispatch({ type: ACTIONS.SWITCH_SESSION_BREAK });
-          audio.play();
+          audioRef.current.play();
+          // audio.play();
           // dispatch({ type: ACTIONS.TOGGLE_PLAY_PAUSE }); // Stop the timer for a moment after switching
         } else if (breakLeft === 0 && !isSession) {
           dispatch({ type: ACTIONS.SWITCH_SESSION_BREAK });
-          audio.play();
+          audioRef.current.play();
+          // audio.play();
           // dispatch({ type: ACTIONS.TOGGLE_PLAY_PAUSE }); // Stop the timer for a moment after switching
         }
       }, 1000);
@@ -134,6 +138,7 @@ function App() {
 
   return (
     <div className="App">
+      <audio id="beep" ref={audioRef} src={wavFile}></audio>
       <div id="control-panel" className="control-panel">
         <div id="break-setter">
           <h2 id="break-label" className="break-label">
@@ -213,6 +218,8 @@ function App() {
           className="reset"
           onClick={() => {
             dispatch({ type: ACTIONS.RESET });
+            audioRef.current.pause();
+            audioRef.current.currentTime = 0; // Rewind to the beginning
           }}
         >
           <FontAwesomeIcon icon={faArrowRotateLeft} />
