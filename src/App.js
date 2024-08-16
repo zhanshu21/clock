@@ -8,7 +8,10 @@ import {
   faCirclePause,
   faCirclePlay,
 } from "@fortawesome/free-solid-svg-icons";
-
+import wavFile from "./notification.wav";
+// todo:
+//       add CSS;
+//       disable all increment and decrement button when the timer is on;
 export const ACTIONS = {
   INCREMENT_SESSION: "increment-sessionLength",
   DECREMENT_SESSION: "decreme-t-sessionLength",
@@ -19,6 +22,8 @@ export const ACTIONS = {
   SESSIONTICK: "sessionTick",
   BREAKTICK: "breakTick",
   SWITCH_SESSION_BREAK: "switch-session-break",
+  DISABLE_BUTTON: "disable-button",
+  ENABLE_BUTTON: "enable-button"
 };
 
 const initialState = {
@@ -28,6 +33,7 @@ const initialState = {
   sessionLeft: 25 * 60,
   isRunning: false,
   isSession: true,
+  buttonDisabled: false,
 };
 
 function reducer(state, { type, payload }) {
@@ -72,6 +78,10 @@ function reducer(state, { type, payload }) {
         breakLeft: state.breakLength * 60,
         sessionLeft: state.sessionLength * 60,
       };
+    case ACTIONS.DISABLE_BUTTON:
+      return { ...state, buttonDisabled: true };
+    case ACTIONS.ENABLE_BUTTON:
+      return { ...state, buttonDisabled: false };
     default:
       return state;
   }
@@ -86,14 +96,17 @@ function App() {
       sessionLeft,
       isRunning,
       isSession,
+      buttonDisabled,
     },
     dispatch,
   ] = useReducer(reducer, initialState);
 
   useEffect(() => {
     let timer = null;
+    let audio = new Audio(wavFile);
 
     if (isRunning) {
+      dispatch({ type: ACTIONS.DISABLE_BUTTON });
       timer = setInterval(() => {
         if (isSession && sessionLeft > 0) {
           dispatch({ type: ACTIONS.SESSIONTICK });
@@ -101,12 +114,16 @@ function App() {
           dispatch({ type: ACTIONS.BREAKTICK });
         } else if (sessionLeft === 0 && isSession) {
           dispatch({ type: ACTIONS.SWITCH_SESSION_BREAK });
+          audio.play();
           // dispatch({ type: ACTIONS.TOGGLE_PLAY_PAUSE }); // Stop the timer for a moment after switching
         } else if (breakLeft === 0 && !isSession) {
           dispatch({ type: ACTIONS.SWITCH_SESSION_BREAK });
+          audio.play();
           // dispatch({ type: ACTIONS.TOGGLE_PLAY_PAUSE }); // Stop the timer for a moment after switching
         }
       }, 1000);
+    } else {
+      dispatch({ type: ACTIONS.ENABLE_BUTTON });
     }
     // cleanup function that React calls when the component unmounts
     // or before the effect runs again (i.e., when dependency changes
@@ -128,6 +145,7 @@ function App() {
             onClick={() => {
               dispatch({ type: ACTIONS.DECREMENT_BREAK });
             }}
+            disabled = {buttonDisabled}
           >
             <FontAwesomeIcon icon={faArrowDown} />
           </button>
@@ -138,6 +156,7 @@ function App() {
             onClick={() => {
               dispatch({ type: ACTIONS.INCREMENT_BREAK });
             }}
+            disabled = {buttonDisabled}
           >
             <FontAwesomeIcon icon={faArrowUp} />
           </button>
@@ -152,6 +171,7 @@ function App() {
             onClick={() => {
               dispatch({ type: ACTIONS.DECREMENT_SESSION });
             }}
+            disabled = {buttonDisabled}
           >
             <FontAwesomeIcon icon={faArrowDown} />
           </button>
@@ -162,6 +182,7 @@ function App() {
             onClick={() => {
               dispatch({ type: ACTIONS.INCREMENT_SESSION });
             }}
+            disabled = {buttonDisabled}
           >
             <FontAwesomeIcon icon={faArrowUp} />
           </button>
@@ -181,7 +202,11 @@ function App() {
             dispatch({ type: ACTIONS.TOGGLE_PLAY_PAUSE });
           }}
         >
-          <FontAwesomeIcon icon={faCirclePause} />
+          {isRunning ? (
+            <FontAwesomeIcon icon={faCirclePause} />
+          ) : (
+            <FontAwesomeIcon icon={faCirclePlay} />
+          )}
         </button>
         <button
           id="reset"
