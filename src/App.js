@@ -3,12 +3,10 @@ import { useReducer, useEffect, useRef } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faArrowUp,
-  faArrowDown,
-  faArrowRotateLeft,
-  faCirclePause,
-  faCirclePlay,
+  faArrowDown
 } from "@fortawesome/free-solid-svg-icons";
 import wavFile from "./notification.wav";
+import { Timer } from "./components/Timer";
 // todo:
 //       add CSS;
 //       disable all increment and decrement button when the timer is on;
@@ -23,7 +21,7 @@ export const ACTIONS = {
   BREAKTICK: "breakTick",
   SWITCH_SESSION_BREAK: "switch-session-break",
   DISABLE_BUTTON: "disable-button",
-  ENABLE_BUTTON: "enable-button"
+  ENABLE_BUTTON: "enable-button",
 };
 
 const initialState = {
@@ -150,7 +148,7 @@ function App() {
             onClick={() => {
               dispatch({ type: ACTIONS.DECREMENT_BREAK });
             }}
-            disabled = {buttonDisabled}
+            disabled={buttonDisabled}
           >
             <FontAwesomeIcon icon={faArrowDown} />
           </button>
@@ -161,7 +159,7 @@ function App() {
             onClick={() => {
               dispatch({ type: ACTIONS.INCREMENT_BREAK });
             }}
-            disabled = {buttonDisabled}
+            disabled={buttonDisabled}
           >
             <FontAwesomeIcon icon={faArrowUp} />
           </button>
@@ -176,7 +174,7 @@ function App() {
             onClick={() => {
               dispatch({ type: ACTIONS.DECREMENT_SESSION });
             }}
-            disabled = {buttonDisabled}
+            disabled={buttonDisabled}
           >
             <FontAwesomeIcon icon={faArrowDown} />
           </button>
@@ -187,49 +185,25 @@ function App() {
             onClick={() => {
               dispatch({ type: ACTIONS.INCREMENT_SESSION });
             }}
-            disabled = {buttonDisabled}
+            disabled={buttonDisabled}
           >
             <FontAwesomeIcon icon={faArrowUp} />
           </button>
         </div>
       </div>
-      <div id="timer" className="timer">
-        <h1 id="timer-label" className="timer-label">
-          {isSession ? "Session" : "Break"}
-        </h1>
-        <div id="time-left" className="time-left">
-          {isSession ? formatTime(sessionLeft) : formatTime(breakLeft)}
-        </div>
-        <button
-          id="start_stop"
-          className="start_stop"
-          onClick={() => {
-            dispatch({ type: ACTIONS.TOGGLE_PLAY_PAUSE });
-          }}
-        >
-          {isRunning ? (
-            <FontAwesomeIcon icon={faCirclePause} />
-          ) : (
-            <FontAwesomeIcon icon={faCirclePlay} />
-          )}
-        </button>
-        <button
-          id="reset"
-          className="reset"
-          onClick={() => {
-            dispatch({ type: ACTIONS.RESET });
-            audioRef.current.pause();
-            audioRef.current.currentTime = 0; // Rewind to the beginning
-          }}
-        >
-          <FontAwesomeIcon icon={faArrowRotateLeft} />
-        </button>
-      </div>
+      <Timer
+        isRunning={isRunning}
+        isSession={isSession}
+        sessionLeft={sessionLeft}
+        breakLeft={breakLeft}
+        audioRef={audioRef}
+        dispatch={dispatch}
+      />
     </div>
   );
 }
 
-function formatTime(seconds) {
+export function formatTime(seconds) {
   const formattedMinutes = String(Math.floor(seconds / 60)).padStart(2, "0");
   const formattedSeconds = String(Math.floor(seconds % 60)).padStart(2, "0");
   return `${formattedMinutes}:${formattedSeconds}`;
