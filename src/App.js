@@ -1,15 +1,13 @@
 import "./App.css";
 import { useReducer, useEffect, useRef } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faArrowUp,
-  faArrowDown
-} from "@fortawesome/free-solid-svg-icons";
 import wavFile from "./notification.wav";
 import { Timer } from "./components/Timer";
+import { Decrement } from "./components/Decrement";
+import { Increment } from "./components/Increment";
+
 // todo:
 //       add CSS;
-//       disable all increment and decrement button when the timer is on;
+
 export const ACTIONS = {
   INCREMENT_SESSION: "increment-sessionLength",
   DECREMENT_SESSION: "decreme-t-sessionLength",
@@ -142,54 +140,18 @@ function App() {
           <h2 id="break-label" className="break-label">
             Break Length
           </h2>
-          <button
-            id="break-decrement"
-            className="break-decrement"
-            onClick={() => {
-              dispatch({ type: ACTIONS.DECREMENT_BREAK });
-            }}
-            disabled={buttonDisabled}
-          >
-            <FontAwesomeIcon icon={faArrowDown} />
-          </button>
+          <Decrement keyWord="break" dispatch={dispatch} buttonDisabled={buttonDisabled} />
           <div id="break-length">{breakLength}</div>
-          <button
-            id="break-increment"
-            className="break-increment"
-            onClick={() => {
-              dispatch({ type: ACTIONS.INCREMENT_BREAK });
-            }}
-            disabled={buttonDisabled}
-          >
-            <FontAwesomeIcon icon={faArrowUp} />
-          </button>
+          <Increment keyWord="break" dispatch={dispatch} buttonDisabled={buttonDisabled} />
         </div>
         <div id="session-setter">
           <h2 id="session-label" className="sessionLength-label">
             Session Length
           </h2>
-          <button
-            id="session-decrement"
-            className="session-decrement"
-            onClick={() => {
-              dispatch({ type: ACTIONS.DECREMENT_SESSION });
-            }}
-            disabled={buttonDisabled}
-          >
-            <FontAwesomeIcon icon={faArrowDown} />
-          </button>
+          <Decrement keyWord="session" dispatch={dispatch} buttonDisabled={buttonDisabled} />
           <div id="session-length">{sessionLength}</div>
-          <button
-            id="session-increment"
-            className="session-increment"
-            onClick={() => {
-              dispatch({ type: ACTIONS.INCREMENT_SESSION });
-            }}
-            disabled={buttonDisabled}
-          >
-            <FontAwesomeIcon icon={faArrowUp} />
-          </button>
-        </div>
+          <Increment keyWord="session" dispatch={dispatch} buttonDisabled={buttonDisabled} />
+        </div> 
       </div>
       <Timer
         isRunning={isRunning}
