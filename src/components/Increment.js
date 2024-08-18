@@ -8,11 +8,16 @@ export const Increment = ({ keyWord, dispatch, buttonDisabled }) => {
       id={`${keyWord}-increment`}
       className={`${keyWord}-increment`}
       onClick={() => {
-        dispatch({ type: keyWord === "break" ? ACTIONS.INCREMENT_BREAK : ACTIONS.INCREMENT_SESSION });
+        dispatch({
+          type:
+            keyWord === "break"
+              ? ACTIONS.INCREMENT_BREAK
+              : ACTIONS.INCREMENT_SESSION,
+        });
       }}
       disabled={buttonDisabled}
     >
-      <FontAwesomeIcon icon={faArrowUp} />
+      <FontAwesomeIcon icon={faArrowUp} className="icons"/>
     </button>
   );
 };

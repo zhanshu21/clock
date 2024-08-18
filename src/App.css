@@ -1,38 +1,88 @@
+:root {
+  --control-color: #393838;
+  --darker: #1e2445;
+}
+
 .App {
-  text-align: center;
+  width: 560px;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.control-panel {
+  display: flex;
+  flex-direction: rows;
+  justify-content: space-around;
+  align-items: center;
+  margin-bottom: 3rem;
+  color: var(--control-color);
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+.break-setter,
+.session-setter {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: 60% 40%;
+  gap: 5px;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+.break-label,
+.session-label {
+  grid-column: 1 / 4;
+}
+
+.length {
+  font-size: 1.4rem;
+  padding-top: 4px;
+}
+
+.icons {
+  font-size: 1.2rem;
+  color: var(--control-color);
+}
+
+.larger {
+  font-size: 2rem;
+  color: var(--darker);
+}
+
+button {
+  margin: 0.5rem 1rem;
+  background: none;
+  border: 0;
+}
+
+button:not(:disabled):hover .icons {
+  transform: scale(1.2);
+  opacity: 80%;
+  transition-duration: 0.2s;
+}
+
+button:not(:disabled):active .icons {
+  transform: scale(0.8);
+}
+
+button:disabled {
+  opacity: 30%;
+}
+
+.timer {
+  width: 300px;
+  height: 250px;
+  margin: 0 auto;
+  border: 3px rgba(136, 136, 134, 0.6) solid;
+  border-radius: 50%;
   display: flex;
   flex-direction: column;
-  align-items: center;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  align-items: center;
+  box-shadow: 0 0 20px rgba(66, 65, 65, 0.6);
 }
 
-.App-link {
-  color: #61dafb;
+.timer-label {
+  font-size: 2.5rem;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.time-left {
+  font-size: 1.8rem;
+  font-weight: bold;
+  margin: 1rem 0;
 }

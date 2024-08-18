@@ -8,11 +8,16 @@ export const Decrement = ({ keyWord, dispatch, buttonDisabled }) => {
       id={`${keyWord}-decrement`}
       className={`${keyWord}-decrement`}
       onClick={() => {
-        dispatch({ type: keyWord === "break"? ACTIONS.DECREMENT_BREAK : ACTIONS.DECREMENT_SESSION });
+        dispatch({
+          type:
+            keyWord === "break"
+              ? ACTIONS.DECREMENT_BREAK
+              : ACTIONS.DECREMENT_SESSION,
+        });
       }}
       disabled={buttonDisabled}
     >
-      <FontAwesomeIcon icon={faArrowDown} />
+      <FontAwesomeIcon icon={faArrowDown} className="icons" />
     </button>
   );
 };

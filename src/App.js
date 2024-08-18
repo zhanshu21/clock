@@ -136,20 +136,20 @@ function App() {
     <div className="App">
       <audio id="beep" ref={audioRef} src={wavFile}></audio>
       <div id="control-panel" className="control-panel">
-        <div id="break-setter">
+        <div id="break-setter" className="break-setter">
           <h2 id="break-label" className="break-label">
             Break Length
           </h2>
           <Decrement keyWord="break" dispatch={dispatch} buttonDisabled={buttonDisabled} />
-          <div id="break-length">{breakLength}</div>
+          <div id="break-length" className="length">{breakLength}</div>
           <Increment keyWord="break" dispatch={dispatch} buttonDisabled={buttonDisabled} />
         </div>
-        <div id="session-setter">
-          <h2 id="session-label" className="sessionLength-label">
+        <div id="session-setter" className="session-setter">
+          <h2 id="session-label" className="session-label">
             Session Length
           </h2>
           <Decrement keyWord="session" dispatch={dispatch} buttonDisabled={buttonDisabled} />
-          <div id="session-length">{sessionLength}</div>
+          <div id="session-length" className="length">{sessionLength}</div>
           <Increment keyWord="session" dispatch={dispatch} buttonDisabled={buttonDisabled} />
         </div> 
       </div>

@@ -22,30 +22,32 @@ export const Timer = ({
       <div id="time-left" className="time-left">
         {isSession ? formatTime(sessionLeft) : formatTime(breakLeft)}
       </div>
-      <button
-        id="start_stop"
-        className="start_stop"
-        onClick={() => {
-          dispatch({ type: ACTIONS.TOGGLE_PLAY_PAUSE });
-        }}
-      >
-        {isRunning ? (
-          <FontAwesomeIcon icon={faCirclePause} />
-        ) : (
-          <FontAwesomeIcon icon={faCirclePlay} />
-        )}
-      </button>
-      <button
-        id="reset"
-        className="reset"
-        onClick={() => {
-          dispatch({ type: ACTIONS.RESET });
-          audioRef.current.pause();
-          audioRef.current.currentTime = 0; // Rewind to the beginning
-        }}
-      >
-        <FontAwesomeIcon icon={faArrowRotateLeft} />
-      </button>
+      <div className="timer-buttons">
+        <button
+          id="start_stop"
+          className="start_stop"
+          onClick={() => {
+            dispatch({ type: ACTIONS.TOGGLE_PLAY_PAUSE });
+          }}
+        >
+          {isRunning ? (
+            <FontAwesomeIcon icon={faCirclePause} className="icons larger" />
+          ) : (
+            <FontAwesomeIcon icon={faCirclePlay} className="icons larger" />
+          )}
+        </button>
+        <button
+          id="reset"
+          className="reset"
+          onClick={() => {
+            dispatch({ type: ACTIONS.RESET });
+            audioRef.current.pause();
+            audioRef.current.currentTime = 0; // Rewind to the beginning
+          }}
+        >
+          <FontAwesomeIcon icon={faArrowRotateLeft} className="icons larger" />
+        </button>
+      </div>
     </div>
   );
 };
